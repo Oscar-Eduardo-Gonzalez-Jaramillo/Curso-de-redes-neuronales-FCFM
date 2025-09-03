@@ -147,7 +147,7 @@ class Network(object):
         queramos usar.
         Para este caso queremos usar la BCE.
         """
-        delta = self.cost_derivative(activations[-1], y)
+        delta = self.cost_derivative(activations[-1], y) #* sigmoid_prime(zs[-1])
         nabla_b[-1] = delta
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
         # Notamos que la variable l en el bucle a continuación se usa de manera diferente 
@@ -155,9 +155,9 @@ class Network(object):
         # l=2 la penúltima, y así sucesivamente. Esto aprovecha los índices negativos en listas de Python.
         for l in range(2, self.num_layers):
             z = zs[-l]
-            sp = sigmoid_prime(z)
-            #Cambiamos la definición de delta debido al cambio de la función de costos 
-            delta = np.dot(self.weights[-l+1].transpose(), delta)
+            #sp = sigmoid_prime(z)
+            #Cambiamos la definición de delta para ajustarla a la nueva función de activación 
+            delta = np.dot(self.weights[-l+1].transpose(), delta) #* sp
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
         return (nabla_b, nabla_w)

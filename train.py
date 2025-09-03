@@ -28,3 +28,5 @@ net.SGD(training_data, 10, 16, 0.01, test_data=test_data)  # Épocas=10, Mini_ba
 
 # Salimos del script
 #exit()
+
+

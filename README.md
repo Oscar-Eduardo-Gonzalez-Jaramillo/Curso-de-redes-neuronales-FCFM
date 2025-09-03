@@ -1,4 +1,5 @@
-#Curso de redes neuronales 
-Autor:Oscar Eduardo González Jaramillo 
-Repositorio dedicado a la inteligencia artificial y en particular al curso de "redes neuronales" impartido por el Dr. Jorge Velazquez de la FCFM de BUAP.
-##Creare una rama por cada tarea para poder organizar el repositorio
+#Tarea_2 
+Para la primera parte de la tarea se implemento la función de costos BCE en el código de network.py . 
+El implementar este cambio provoco un overflow en la función sigmoide por lo que la red parece no aprender correctamente,
+las posibles causas ya fueron discutidas en la clase, por lo tanto intentare implementar la mejora en la inicialización de 
+los pesos para ver si el rendimiento de la red mejora. 
