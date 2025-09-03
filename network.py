@@ -155,9 +155,9 @@ class Network(object):
         # l=2 la penúltima, y así sucesivamente. Esto aprovecha los índices negativos en listas de Python.
         for l in range(2, self.num_layers):
             z = zs[-l]
-            #sp = sigmoid_prime(z)
+            sp = sigmoid_prime(z)
             #Cambiamos la definición de delta para ajustarla a la nueva función de activación 
-            delta = np.dot(self.weights[-l+1].transpose(), delta) #* sp
+            delta = np.dot(self.weights[-l+1].transpose(), delta)* sp
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
         return (nabla_b, nabla_w)
