@@ -19,14 +19,14 @@ test_data = list(test_data)
 net = network.Network([784, 30, 10])
 
 # Entrenamos la red con SGD: 10 épocas, mini batches de 5, tasa de aprendizaje 0.1, usando test_data para evaluación
-net.SGD(training_data, 10, 16, 0.01, test_data=test_data)  # Épocas=10, Mini_batch_size=5, learning rate=0.1
+net.SGD(training_data, 10, 5, 0.08, test_data=test_data)  # Épocas=10, Mini_batch_size=5, learning rate=0.1
 
 # Guardamos la red entrenada en un archivo pickle
 #archivo = open("red_prueba2_pkl", 'wb')
 #pickle.dump(net, archivo)
 #archivo.close()
 
-# Salimos del script
+# Salimos del script 
 #exit()
 
 

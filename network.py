@@ -38,9 +38,9 @@ class Network(object):
         aleatorios en una distribución gaussiana.
         """
         # Define una lista de vectores donde cada vector representa los sesgos de cada capa 
-        self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+        self.biases = [np.random.normal(0, 1/np.sqrt(y), (y, 1)) for y in sizes[1:]]
         # Define una lista que contiene las matrices de todos los pesos de la red neuronal.
-        self.weights = [np.random.randn(y, x)  
+        self.weights = [np.random.normal(0, 1/np.sqrt(x), (y, x))  
                         for x, y in zip(sizes[:-1], sizes[1:])]
     """
     Definimos la función de feedforward, la cual nos permitirá entrenar y posteriormente
@@ -156,7 +156,9 @@ class Network(object):
         for l in range(2, self.num_layers):
             z = zs[-l]
             sp = sigmoid_prime(z)
-            #Cambiamos la definición de delta para ajustarla a la nueva función de activación 
+            #En el anterior commit cambie esta definición creyendo que la cancelación
+            # ocurriría en todas las capas por lo que la red no aprendía correctamente 
+            #Ahora revertí el cambio debido a que esa canccelación no ocurre para capas ocultas
             delta = np.dot(self.weights[-l+1].transpose(), delta)* sp
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
