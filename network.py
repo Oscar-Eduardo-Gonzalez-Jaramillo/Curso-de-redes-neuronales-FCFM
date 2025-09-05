@@ -6,10 +6,9 @@ El propósito de este código de Python es generar una red neuronal implementada
 desde cero usando únicamente librerías básicas como NumPy, con el fin 
 de entender perfectamente el funcionamiento interno básico de las redes neuronales.
 El código usa backpropagation implementada desde cero y como función de costos 
-por defecto utiliza MSE (por sus siglas en inglés de Mean Square Error), asumiendo 
-etiquetas en formato one-hot para clasificación. Permite de manera sencilla 
-construir diferentes tipos de redes neuronales.
-
+por defecto utiliza BCE (por sus siglas en inglés de Binary Cross Entropy), asumiendo 
+etiquetas en formato one-hot para clasificación. Tambien se le implemento una
+inicialización específica de los pesos para mejorar el rendimiento de la red.
 """
 # Llamamos las librerías necesarias 
 import random
@@ -34,12 +33,13 @@ class Network(object):
         self.sizes = sizes
 
         """
-        Inicializamos los biases y los pesos como matrices con cada uno de sus elementos
-        aleatorios en una distribución gaussiana.
-        """
-        # Define una lista de vectores donde cada vector representa los sesgos de cada capa 
+        Inicializamos una matriz con valores aleatorios cuyos parámetros estan dados así 
+        np.random.normal(mu, sigma, size) con mu siendo el promedio y sigma la desviación estándar
+        Para una mejor incialiación tenemos que su varianza es igual al inverso de las neuronas de 
+        cada capa.
+        """ 
         self.biases = [np.random.normal(0, 1/np.sqrt(y), (y, 1)) for y in sizes[1:]]
-        # Define una lista que contiene las matrices de todos los pesos de la red neuronal.
+
         self.weights = [np.random.normal(0, 1/np.sqrt(x), (y, x))  
                         for x, y in zip(sizes[:-1], sizes[1:])]
     """
@@ -55,8 +55,7 @@ class Network(object):
             a = sigmoid(np.dot(w, a)+b)
         return a
 
-    def SGD(self, training_data, epochs, mini_batch_size, eta,
-            test_data=None):
+    def SGD(self, training_data, epochs, mini_batch_size, eta, beta_1, beta_2, test_data=None):
         """
         En esta parte se entrena la red neuronal al definir un conjunto de datos de entrenamiento, 
         los datos de prueba, las épocas, la tasa de aprendizaje y el tamaño del mini batch. 
@@ -81,13 +80,15 @@ class Network(object):
         # En esta sección se empaquetan las imágenes en mini batches de manera aleatoria para evitar 
         # que la red aprenda patrones dados por el orden de las imágenes y permitir una mejor aproximación 
         # de la función de costos "real".
+        t=0
         for j in range(epochs):
             random.shuffle(training_data)
-            mini_batches = [
-                training_data[k:k+mini_batch_size]
+            mini_batches = [training_data[k:k+mini_batch_size]
                 for k in range(0, n, mini_batch_size)]
             for mini_batch in mini_batches:
-                self.update_mini_batch(mini_batch, eta)
+                t=t+1
+                self.update_mini_batch(mini_batch, eta, beta_1, beta_2, t)
+                
             # Aquí evaluamos la red en los datos de prueba y mostramos su precisión
             if test_data:
                 print("Epoch {0}: {1} / {2}".format(
@@ -98,7 +99,7 @@ class Network(object):
                 print("Epoch {0} complete".format(j))
 
     
-    def update_mini_batch(self, mini_batch, eta):
+    def update_mini_batch(self, mini_batch, eta, beta_1, beta_2, t):
         """
         En esta sección utilizamos el mini batch y la tasa de aprendizaje 
         para actualizar los valores de los pesos y de los sesgos. 
@@ -111,16 +112,33 @@ class Network(object):
         # biases y pesos para poder actualizarlos correctamente 
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
+        m_b = [np.zeros(b.shape) for b in self.biases]
+        m_w = [np.zeros(w.shape) for w in self.weights]
+        r_b = [np.zeros(b.shape) for b in self.biases]
+        r_w = [np.zeros(w.shape) for w in self.weights]
         # Calculamos y almacenamos los valores de las derivadas parciales de cada 
         # peso y bias; en otras palabras, calculamos la "culpa" de cada peso y bias. 
         for x, y in mini_batch:
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
-        self.weights = [w-(eta/len(mini_batch))*nw
-                        for w, nw in zip(self.weights, nabla_w)]
-        self.biases = [b-(eta/len(mini_batch))*nb
-                       for b, nb in zip(self.biases, nabla_b)]
+        #Definimos los parámetros del optimizador adam para el peso 
+        m_w = [beta_1 * y + (1-beta_1) * x for x, y in zip(nabla_w, m_w)]
+        r_w = [beta_2 * y + (1-beta_2) * x**2 for x, y in zip(nabla_w, r_w)]
+        m_hat_w = [x/(1-beta_1**t) for x in m_w]
+        r_hat_w = [x/(1-beta_2**t) for x in r_w]
+        #Definimos los parámetros del optimizador adam para los bias 
+        m_b = [beta_1 * y + (1-beta_1) * x for x, y in zip(nabla_b, m_b)]
+        r_b = [beta_2 * y + (1-beta_2) * x**2 for x, y in zip(nabla_b, r_b)]
+        m_hat_b = [x/(1-beta_1**t) for x in m_b]
+        r_hat_b = [x/(1-beta_2**t) for x in r_b]
+
+        nabla_w = [x/len(mini_batch) for x in nabla_w]
+        nabla_b = [x/len(mini_batch) for x in nabla_b]
+        self.weights = [w-((eta*mhw)/(np.sqrt(rhw) + 0.000000000001))*nw
+                        for w, nw, mhw, rhw in zip(self.weights, nabla_w, m_hat_w, r_hat_w)]
+        self.biases = [b-((eta*mhb)/(np.sqrt(rhb) + 0.000000000001))*nb
+                       for b, nb, mhb, rhb in zip(self.biases, nabla_b, m_hat_b, r_hat_b)]
 
     def backprop(self, x, y):
         """
@@ -156,9 +174,12 @@ class Network(object):
         for l in range(2, self.num_layers):
             z = zs[-l]
             sp = sigmoid_prime(z)
-            #En el anterior commit cambie esta definición creyendo que la cancelación
-            # ocurriría en todas las capas por lo que la red no aprendía correctamente 
-            #Ahora revertí el cambio debido a que esa canccelación no ocurre para capas ocultas
+            """
+            En un anterior commit cambie esta definición creyendo que la cancelación de 
+            la derivada de la función de activación ocurriría en todas las capas, pero debido a ello 
+            la red no aprendía correctamente. Ahora revertí el cambio debido a que esa canccelación
+            no ocurre para capas ocultas.
+            """
             delta = np.dot(self.weights[-l+1].transpose(), delta)* sp
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
