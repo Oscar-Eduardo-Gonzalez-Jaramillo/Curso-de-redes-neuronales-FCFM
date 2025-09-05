@@ -42,6 +42,13 @@ class Network(object):
 
         self.weights = [np.random.normal(0, 1/np.sqrt(x), (y, x))  
                         for x, y in zip(sizes[:-1], sizes[1:])]
+        """
+        Debido a la importancia general de los momentos m y r los denominamos como parámetros globales
+        que debido al optimizador ADAM nos ayudan a minimizar la función de costos de una manera
+        mucho mas rápida y efectiva que con el SGD. Es importante denotarlos como parámetros globales 
+        ya que son indispensables para todo el proceso de actualización de los pesos y al igual que 
+        ellos se actualizaran de manera constante en cada mini batch y a través de las épocas.  
+        """
         self.m_b = [np.zeros(b.shape) for b in self.biases]
         self.m_w = [np.zeros(w.shape) for w in self.weights]
         self.r_b = [np.zeros(b.shape) for b in self.biases]
@@ -60,6 +67,11 @@ class Network(object):
             a = sigmoid(np.dot(w, a)+b)
         return a
 
+    """
+    Ahora el nuevo optimizador solicitará al usuario 2 nuevos hiperparámetros beta_1 y beta_2, los 
+    cuales hacen referencia a la importancia asociada de los momentos pasados y los momentos actuales.
+    """
+    #Cambiamos el nombre del optimizador de SGD al nuevo 
     def ADAM(self, training_data, epochs, mini_batch_size, eta, beta_1, beta_2, test_data=None):
         """
         En esta parte se entrena la red neuronal al definir un conjunto de datos de entrenamiento, 
@@ -87,7 +99,11 @@ class Network(object):
         # de la función de costos "real".
                 #Inicializamos los parámetros usados en el optimizador adam del mismo 
         #tamaño que los pesos y bias 
-
+        """
+        Denotamos un contador global t el cuál nos permitirá evitar el sezgo que con lleva el optimizador
+        ADAM para las primeras actualizaciones, por ello el contador se actualiza con cada actualización
+        del mini batch y no llega a reinciarse a pesar de las épocas que llevemos. 
+        """
         t=0
         for j in range(epochs):
 
@@ -95,8 +111,8 @@ class Network(object):
             mini_batches = [training_data[k:k+mini_batch_size]
                 for k in range(0, n, mini_batch_size)]
             for mini_batch in mini_batches:
-                t=t+1
-                self.update_mini_batch(mini_batch, eta, beta_1, beta_2, t)
+                t=t+1 #Actualizamos el contador 
+                self.update_mini_batch(mini_batch, eta, beta_1, beta_2, t)#
                 
             # Aquí evaluamos la red en los datos de prueba y mostramos su precisión
             if test_data:
@@ -107,15 +123,14 @@ class Network(object):
             else:
                 print("Epoch {0} complete".format(j))
 
-    
+    #Ahora tambien solicita los hiperparámetros configurables beta_1 y beta_2 al 
+    # mismo tiempo que requiere saber la época en la que nos encontramos para 
+    # actualizar los momentos_gorrito correctamente
     def update_mini_batch(self, mini_batch, eta, beta_1, beta_2, t):
         """
-        En esta sección utilizamos el mini batch y la tasa de aprendizaje 
-        para actualizar los valores de los pesos y de los sesgos. 
-        Para ello calculamos con ayuda de la backpropagation y del mini batch
-        una aproximación del gradiente de la función de costos y usamos este valor
-        para "dirigir" o "guiar" a los valores de los pesos y sesgos de manera que 
-        minimicen el valor de la función de costos.
+        Ahora en esta sección no solo actualizamos los pesos y bias de la red, 
+        si no que ahora tambien se actualizan los momentos por cada mini batch procesado, 
+        garantizando así la correcta implementación del optimizador.
         """
         # Para lograr lo anteriormente descrito, "clonamos" las dimensiones de los 
         # biases y pesos para poder actualizarlos correctamente 
@@ -128,27 +143,27 @@ class Network(object):
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
+        #Calculamos promediamos el gradiente del mini batch 
         nabla_w = [x/len(mini_batch) for x in nabla_w]
         nabla_b = [x/len(mini_batch) for x in nabla_b]
-        #Definimos los parámetros del optimizador adam para el peso 
+        #Definimos los momentos del optimizador ADAM con respecto al peso 
         self.m_w = [beta_1 * y + (1-beta_1) * x for x, y in zip(nabla_w, self.m_w)]
         self.r_w = [beta_2 * y + (1-beta_2) * x**2 for x, y in zip(nabla_w, self.r_w)]
-        #Corregimos el sezgo inicial
-        m_hat_w = [x/(1-beta_1**t) for x in self.m_w]
-        r_hat_w = [x/(1-beta_2**t) for x in self.r_w]
-        #Definimos los parámetros del optimizador adam para los bias 
+        #Definimos los momentos del optimizador ADAM para los bias 
         self.m_b = [beta_1 * y + (1-beta_1) * x for x, y in zip(nabla_b, self.m_b)]
         self.r_b = [beta_2 * y + (1-beta_2) * x**2 for x, y in zip(nabla_b, self.r_b)]
-        #Corregimos el sezgo inicial
+        #Corregimos el sezgo inicial de los momentos 
+        m_hat_w = [x/(1-beta_1**t) for x in self.m_w]
+        r_hat_w = [x/(1-beta_2**t) for x in self.r_w]
         m_hat_b = [x/(1-beta_1**t) for x in self.m_b]
         r_hat_b = [x/(1-beta_2**t) for x in self.r_b]
 
-        #Actualizamos los pesos y bias 
+        #Usamos las nuevas actualizaciones de pesos y bias según el optimizador ADAM
         self.weights = [w-((eta*mhw)/(np.sqrt(rhw) + 10e-8))
                         for w, mhw, rhw in zip(self.weights, m_hat_w, r_hat_w)]
         self.biases = [b-((eta*mhb)/(np.sqrt(rhb) + 10e-8))
                         for b, mhb, rhb in zip(self.biases, m_hat_b, r_hat_b)]
-
+        #Se usa una epsilon=10e-8 para evitar siempre la división por 0 
     def backprop(self, x, y):
         """
         En esta sección del código calculamos los valores del gradiente de la función 

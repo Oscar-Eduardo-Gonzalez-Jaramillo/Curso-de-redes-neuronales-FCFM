@@ -18,8 +18,11 @@ test_data = list(test_data)
 # Creamos la red neuronal con capas de 784 neuronas de entrada, 15 ocultas y 10 de salida
 net = network.Network([784, 30, 10])
 
-# Entrenamos la red con SGD: 10 épocas, mini batches de 5, tasa de aprendizaje 0.1, usando test_data para evaluación
-net.ADAM(training_data, 10, 5, 0.001, 0.9, 0.99, test_data=test_data)  # Épocas=10, Mini_batch_size=5, learning rate=0.1 beta_1 = 0.9 beta_2 = 0.99
+"""
+Entrenamos la red con ADAM, ahora tambien solicita 2 hiperparámetros extra configurables 
+por el usuario. 
+"""
+net.ADAM(training_data, 40, 64, 0.001, 0.9, 0.99, test_data=test_data)  # Épocas=10, Mini_batch_size=5, learning rate=0.1 beta_1 = 0.9 beta_2 = 0.99
 
 # Guardamos la red entrenada en un archivo pickle
 #archivo = open("red_prueba2_pkl", 'wb')
