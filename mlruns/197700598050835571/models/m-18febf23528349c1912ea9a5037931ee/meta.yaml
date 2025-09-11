@@ -1,0 +1,10 @@
+artifact_location: file:///c:/C%C3%B3digos%20de%20python/RepoLocal/Curso-de-redes-neuronales-FCFM/mlruns/197700598050835571/models/m-18febf23528349c1912ea9a5037931ee/artifacts
+creation_timestamp: 1757567959457
+experiment_id: '197700598050835571'
+last_updated_timestamp: 1757567989020
+model_id: m-18febf23528349c1912ea9a5037931ee
+model_type: null
+name: model
+source_run_id: d61ac4ad42744bea86d453fba0a24f61
+status: 2
+status_message: null
