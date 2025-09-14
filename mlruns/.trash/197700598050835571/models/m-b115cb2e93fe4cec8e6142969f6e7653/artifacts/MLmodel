@@ -1,0 +1,20 @@
+artifact_path: file:///c:/C%C3%B3digos%20de%20python/RepoLocal/Curso-de-redes-neuronales-FCFM/mlruns/197700598050835571/models/m-b115cb2e93fe4cec8e6142969f6e7653/artifacts
+flavors:
+  keras:
+    data: data
+    keras_backend: tensorflow
+    keras_version: 3.11.3
+    save_exported_model: false
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.keras
+    python_version: 3.13.7
+mlflow_version: 3.3.2
+model_id: m-b115cb2e93fe4cec8e6142969f6e7653
+model_size_bytes: 163676
+model_uuid: m-b115cb2e93fe4cec8e6142969f6e7653
+prompts: null
+run_id: 9fe37cb3fa2e4ba98d4c245a452042a2
+utc_time_created: '2025-09-14 03:00:01.143677'

@@ -1,0 +1,16 @@
+artifact_uri: file:///c:/C%C3%B3digos%20de%20python/RepoLocal/Curso-de-redes-neuronales-FCFM/mlruns/530517243427963038/73ecaa161e3b4b9dbd54e4ee3be3e40f/artifacts
+deleted_time: 1757822754702
+end_time: 1757819594657
+entry_point_name: ''
+experiment_id: '530517243427963038'
+lifecycle_stage: deleted
+run_id: 73ecaa161e3b4b9dbd54e4ee3be3e40f
+run_name: network_keras_a.keras
+run_uuid: 73ecaa161e3b4b9dbd54e4ee3be3e40f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757819561984
+status: 3
+tags: []
+user_id: Oscar
