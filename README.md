@@ -5,8 +5,11 @@
  
  Lamentablemente el entrenamiento con una base de datos tan grande resulto ser un desfio que no logre superar debido a constantes crasheos de mi computadora y tiempos de entrenamiento absurdamente grandes. Por ello decidí al final reiniciar el experimento de optuna y emepzar de cero para unicamente realizar la busqueda de optuna de la mejor arquitectura en la base de datos de la tarea.
  
- El resultado de la busqueda de optuna así como el porcentaje de precisión final en los datos de test se pueden encontrar en el siguiente link de mlflow con el nombre de Tarea_6_final :
+ El resultado de la busqueda de optuna así como el porcentaje de precisión final en los datos de test se pueden encontrar en el siguiente link de mlflow con el nombre de Tarea_6_FINAL, en la run llamada Fine_tunning:
  https://dagshub.com/Oscar-Eduardo-Gonzalez-Jaramillo/Curso-de-redes-neuronales-FCFM.mlflow/#/experiments/27?searchFilter=&orderByKey=attributes.start_time&orderByAsc=false&startTime=ALL&lifecycleFilter=Active&modelVersionFilter=All+Runs&datasetsFilter=W10%3D
+
  
+ En el link anterior se pueden observar los multiples trials junto con el modelo final, cabe destacar que el modelo fue elegido por Optuna y re-entrenado desde cero lo que parece presentar ciertas incosistencias con los resultados en la precisión y la perdida en los datos  de entrenamiento y validación. Por otra parte en el repositorio se encuentra el código usado para la busqueda en optuna y tambien el resultado final de precisión en los datos de validación.
+
  
 
