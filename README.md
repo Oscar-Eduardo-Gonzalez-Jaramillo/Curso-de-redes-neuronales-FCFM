@@ -1,12 +1,7 @@
-## Tarea 6
- La idea original para esta tarea era primero encontrar una arquitectura que presentará los mejores resultados de entre todas, después con la arquitectura elegida utilizarla en una base de datos mas grande pero que mantenga una gran correlación con la base de datos del problema de la tarea con lo cuál el modelo entrenado en estos datos podría ser nuevamente ajustado en el conjunto de datos menor con ello se esperaba que el modelo generalizara de mejor manera en el conjunto de datos de la tarea. 
- 
- Con esta idea en mente se comenzo la busqueda de arquitecturas obteniendo una arquitectura con un desempeño superior al resto en el conjunto de datos del concurso, posteriormente se elegió la base de datos de "plantnet" para el entrenamiento de mi modelo, la cuál es una base de datos que contiene 300K de imagenes de plantas etiquetadas por especies siendo un total de 1081 especies. Esta base de datos fue elegida para entrenar aquí al modelo y para después hacer transfer learning en el conjunto mas pequeño. 
- 
- Lamentablemente el entrenamiento con una base de datos tan grande resulto ser un desfio que no logre superar debido a constantes crasheos de mi computadora y tiempos de entrenamiento absurdamente grandes. Por ello decidí al final reiniciar el experimento de optuna y emepzar de cero para unicamente realizar la busqueda de optuna de la mejor arquitectura en la base de datos de la tarea.
- 
- El resultado de la busqueda de optuna así como el porcentaje de precisión final en los datos de test se pueden encontrar en el siguiente link de mlflow con el nombre de Tarea_6_final :
- https://dagshub.com/Oscar-Eduardo-Gonzalez-Jaramillo/Curso-de-redes-neuronales-FCFM.mlflow/#/experiments/27?searchFilter=&orderByKey=attributes.start_time&orderByAsc=false&startTime=ALL&lifecycleFilter=Active&modelVersionFilter=All+Runs&datasetsFilter=W10%3D
- 
- 
+##Tarea 7 
+Se logró entrenar un modelo capaz de reconocer mi rostro, siguiendo el procedimiento recomendado: primero, se entrenó el modelo en la base de datos de CelebA para extraer características generales de rostros, y luego se aplicó transfer learning utilizando fotos mías y de mis familiares, con el fin de crear un clasificador binario que detectara específicamente mi rostro.
+Para ello, se utilizó como arquitectura base la DenseNet121, seleccionada porque en una tarea previa, durante la búsqueda de arquitecturas, resultó ser la más efectiva. Reutilizando este resultado, se partió de esta base sin cargar los pesos preentrenados de ImageNet; es decir, se inicializó desde cero para la clasificación de características faciales en la base de datos alineada de CelebA.
+El entrenamiento y su progreso pueden observarse en MLflow, en el experimento de la Tarea_7. En la run DenseNet-CelebA se entrenó el modelo para el reconocimiento de características generales, mientras que en la run DenseNet_Oscar_Face se realizó el primer intento de entrenamiento con mi rostro. El problema en este modelo fue que aprendió características indeseadas, como gorras y fondos, por lo que se llevó a cabo un segundo intento. En este, se añadieron diversos ejemplos negativos bajo condiciones similares, con el objetivo de evitar que el modelo incorporara dichas características. Los resultados obtenidos son muy positivos, aunque probablemente indiquen un grado considerable de sobreajuste.
+El modelo, junto con las métricas y parámetros del experimento, pueden consultarse en:
+https://dagshub.com/Oscar-Eduardo-Gonzalez-Jaramillo/Curso-de-redes-neuronales-FCFM.mlflow/#/experiments/28?searchFilter=&orderByKey=attributes.start_time&orderByAsc=false&startTime=ALL&lifecycleFilter=Active&modelVersionFilter=All+Runs&datasetsFilter=W10%3D
 
